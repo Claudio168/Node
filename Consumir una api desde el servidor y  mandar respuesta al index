@@ -1,0 +1,49 @@
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consulta de API desde el servidor</title>
+</head>
+<body>
+  <h1>Respuesta de API:</h1>
+  <ul id="response"></ul>
+
+  <script>
+    fetch('/api')
+    .then(response => response.json())
+    .then(data => {
+      let nombres =  document.getElementById('response');
+      data.forEach(element => {
+        let li = document.createElement('li'); // Crear un elemento <li>
+        li.textContent = element.name; // Establecer el texto del elemento <li>
+        nombres.appendChild(li); // Agregar el elemento <li> al elemento <ul>
+      });
+    })
+    .catch(error => console.error(error));
+  </script>
+</body>
+</html>
+===============================================================================
+server.js
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+ // Configurar el servidor HTTP
+app.use(express.static(__dirname + '/public'));
+
+// Ruta para consultar la API
+app.get('/api', async (req, res) => {
+  try {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al consultar la API' });
+  }
+});
+
+// Iniciar el servidor
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Servidor escuchando en el puerto ${port}`);
+});
